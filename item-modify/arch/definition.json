@@ -1,0 +1,230 @@
+{
+  "system_name": "item-modify",
+  "description": "REST CRUD service for Items — Go/Gin backend with IBM Cloud Object Storage persistence and IBM Secrets Manager credential management, deployed on IBM Code Engine.",
+  "rto_default": "4h",
+  "rpo_default": "1h",
+  "compliance": "IBM Cloud Security",
+  "github_repo": "blueprint/resilience-forge",
+  "output_path": "item-modify/arch",
+
+  "deployment": {
+    "platform":     "IBM Code Engine",
+    "project":      "event-notification-server",
+    "project_id":   "5b578840-3506-444d-a21a-d5a768c6e324",
+    "region":       "us-south",
+    "app_name":     "item-modify",
+    "app_id":       "6a65c9cc-4c76-4b59-8831-8d7cd8fc63dc",
+    "app_url":      "https://item-modify.27wc2juyqulv.us-south.codeengine.appdomain.cloud",
+    "min_scale":    1,
+    "max_scale":    5,
+    "cpu":          "0.5",
+    "memory":       "1G",
+    "image":        "us.icr.io/resilience-forge/item-modify:latest"
+  },
+
+  "components": [
+    {
+      "name":       "code-engine-app",
+      "type":       "compute",
+      "tier":       "compute",
+      "stateful":   false,
+      "region":     "us-south",
+      "az":         ["us-south-1", "us-south-2", "us-south-3"],
+      "rto":        "15min",
+      "rpo":        "N/A",
+      "backup":     { "enabled": false },
+      "runtime": {
+        "language":    "Go 1.25",
+        "framework":   "Gin v1.12",
+        "image_base":  "scratch",
+        "build_base":  "golang:1.25-alpine",
+        "port":        8080,
+        "env_vars": [
+          "UI_DIR",
+          "COS_INSTANCE_CRN",
+          "COS_ENDPOINT",
+          "COS_BUCKET",
+          "SM_INSTANCE_URL",
+          "SM_API_KEY",
+          "SM_SECRET_ID"
+        ]
+      },
+      "source_files": [
+        "api/main.go",
+        "api/handler.go",
+        "api/model.go",
+        "api/config.go",
+        "api/secrets.go",
+        "api/store.go"
+      ],
+      "dependencies": [
+        "cos-bucket",
+        "secrets-manager",
+        "iam-token-service"
+      ],
+      "notes": "Stateless compute — Code Engine scales 1-5 replicas. Serves REST API at /api/items and static UI at /."
+    },
+
+    {
+      "name":       "cos-bucket",
+      "type":       "storage",
+      "tier":       "data",
+      "stateful":   true,
+      "region":     "us-south",
+      "az":         ["us-south-smart"],
+      "rto":        "1h",
+      "rpo":        "15min",
+      "backup": {
+        "enabled":        true,
+        "frequency":      "continuous",
+        "retention_days": 90,
+        "cross_region":   false,
+        "target_region":  "N/A"
+      },
+      "ibm_resource": {
+        "service":       "cloud-object-storage",
+        "instance_name": "resilience-forge",
+        "instance_id":   "4c1fe46b-a89d-4b23-8729-d9d8221ecf5f",
+        "crn":           "crn:v1:bluemix:public:cloud-object-storage:global:a/1f7277194bb748cdb1d35fd8fb85a7cb:4c1fe46b-a89d-4b23-8729-d9d8221ecf5f::",
+        "bucket":        "resilience-app",
+        "endpoint":      "s3.us-south.cloud-object-storage.appdomain.cloud",
+        "storage_class": "us-south-smart"
+      },
+      "data_model": {
+        "object_key_pattern": "items/{id}.json",
+        "object_format":      "JSON",
+        "fields": ["id", "name", "value", "created_at", "updated_at"],
+        "operations": ["PutObject", "GetObject", "ListObjectsV2", "DeleteObject"]
+      },
+      "dependencies": [
+        "iam-token-service"
+      ],
+      "notes": "Each Item is stored as a single JSON object. Key pattern: items/<id>.json. Authentication via IAM Bearer token refreshed by ibm-cos-sdk-go."
+    },
+
+    {
+      "name":       "secrets-manager",
+      "type":       "security",
+      "tier":       "network",
+      "stateful":   true,
+      "region":     "eu-gb",
+      "az":         ["eu-gb"],
+      "rto":        "30min",
+      "rpo":        "N/A",
+      "backup":     { "enabled": false },
+      "ibm_resource": {
+        "service":       "secrets-manager",
+        "instance_id":   "d53e26db-b7c1-461d-94e6-8de136174d04",
+        "instance_url":  "https://d53e26db-b7c1-461d-94e6-8de136174d04.eu-gb.secrets-manager.appdomain.cloud",
+        "secret_type":   "iam_credentials",
+        "secret_name":   "resilience-forge-iam-api-key",
+        "secret_id":     "2c54b838-360b-fc07-cff9-3eb9a13075e1",
+        "auto_rotate":   true,
+        "rotation_interval": "2 months"
+      },
+      "purpose": "Vends a short-lived IAM API key for COS access at application startup. Eliminates static credentials in environment variables.",
+      "dependencies": [
+        "iam-token-service"
+      ],
+      "notes": "Fetched once at startup via secrets.go → IAMAPIKeyFromSecretsManager(). SM auto-rotates the key every 2 months."
+    },
+
+    {
+      "name":       "iam-token-service",
+      "type":       "security",
+      "tier":       "network",
+      "stateful":   false,
+      "region":     "global",
+      "az":         ["global"],
+      "rto":        "N/A",
+      "rpo":        "N/A",
+      "backup":     { "enabled": false },
+      "ibm_resource": {
+        "service":    "iam",
+        "host":       "iam.cloud.ibm.com",
+        "endpoint":   "/identity/token"
+      },
+      "purpose": "Issues Bearer access tokens from IAM API keys. Used by both secrets.go (to authenticate to Secrets Manager) and ibm-cos-sdk-go (to authenticate S3 calls to COS).",
+      "dependencies": [],
+      "notes": "IBM-managed global service. No RTO/RPO — IBM SLA applies."
+    },
+
+    {
+      "name":       "container-registry",
+      "type":       "storage",
+      "tier":       "compute",
+      "stateful":   true,
+      "region":     "us-south",
+      "az":         ["us-south"],
+      "rto":        "1h",
+      "rpo":        "N/A",
+      "backup":     { "enabled": false },
+      "ibm_resource": {
+        "service":    "container-registry",
+        "registry":   "us.icr.io",
+        "namespace":  "resilience-forge",
+        "image":      "us.icr.io/resilience-forge/item-modify:latest"
+      },
+      "purpose": "Stores the Docker image pulled by Code Engine at deployment and scale-out events.",
+      "dependencies": [],
+      "notes": "Image is ~15 MB (scratch base). Rebuilt and pushed via Dockerfile + deploy.sh on every code change."
+    },
+
+    {
+      "name":       "ui-static",
+      "type":       "compute",
+      "tier":       "compute",
+      "stateful":   false,
+      "region":     "us-south",
+      "az":         ["us-south-1", "us-south-2", "us-south-3"],
+      "rto":        "15min",
+      "rpo":        "N/A",
+      "backup":     { "enabled": false },
+      "source_files": ["ui/index.html"],
+      "runtime": {
+        "type":         "static",
+        "served_by":    "code-engine-app",
+        "routes": [
+          { "path": "/",              "file": "ui/index.html" },
+          { "path": "/ui/*",          "dir":  "/ui" }
+        ]
+      },
+      "dependencies": ["code-engine-app"],
+      "notes": "Zero-dependency single-page app. Baked into the Docker image at /ui/index.html. No CDN — served directly by the Gin server."
+    }
+  ],
+
+  "data_flows": [
+    {
+      "id":          "df-1",
+      "name":        "Startup — credential bootstrap",
+      "description": "On boot, main.go calls loadCOSConfig() which reads SM env vars, calls secrets.go to fetch the IAM API key from Secrets Manager, then builds the COS Store.",
+      "steps": [
+        "main.go → config.go: read SM_INSTANCE_URL, SM_API_KEY, SM_SECRET_ID",
+        "config.go → secrets.go: call IAMAPIKeyFromSecretsManager()",
+        "secrets.go → Secrets Manager: GetSecret(secret_id)",
+        "Secrets Manager → IAM Token Service: validate caller API key",
+        "Secrets Manager → secrets.go: return IAMCredentialsSecret.ApiKey",
+        "secrets.go → main.go: return IAM API key string",
+        "main.go → store.go: NewStore(cosCfg) — builds ibm-cos-sdk-go S3 client"
+      ]
+    },
+    {
+      "id":          "df-2",
+      "name":        "Runtime — CRUD request",
+      "description": "Every HTTP request flows through the Gin router, CORS middleware, and handler before reaching the COS-backed store.",
+      "steps": [
+        "Browser: fetch() POST|GET|PUT|DELETE /api/items",
+        "Code Engine ingress → Gin Router (:8080)",
+        "Gin Router → CORS Middleware: set headers, handle OPTIONS preflight",
+        "CORS Middleware → handler.go: c.Next()",
+        "handler.go: ShouldBindJSON, construct Item struct (model.go)",
+        "handler.go → store.go: Create|List|GetByID|Update|Delete",
+        "store.go → ibm-cos-sdk-go: PutObject|GetObject|ListObjectsV2|DeleteObject",
+        "ibm-cos-sdk-go → IAM Token Service: refresh Bearer token (as needed)",
+        "ibm-cos-sdk-go → COS Bucket (resilience-app): execute S3 operation",
+        "Response propagates back: COS → store → handler → c.JSON → Browser"
+      ]
+    }
+  ]
+}

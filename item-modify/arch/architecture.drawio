@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" page="0" background="#161616">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- TITLE                                                         -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <mxCell id="2" value="item-modify — System Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#f4f4f4;" vertex="1" parent="1">
+      <mxGeometry x="200" y="20" width="900" height="44" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ZONE A: USER / BROWSER                                        -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <mxCell id="3" value="USER" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;fontColor=#a8a8a8;align=left;" vertex="1" parent="1">
+      <mxGeometry x="200" y="78" width="60" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="4" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#262626;strokeColor=#4589ff;strokeWidth=2;arcSize=6;" vertex="1" parent="1">
+      <mxGeometry x="200" y="96" width="900" height="110" as="geometry"/>
+    </mxCell>
+    <!-- browser icon -->
+    <mxCell id="5" value="" style="shape=mxgraph.cisco.computers_and_peripherals.pc;fillColor=#4589ff;strokeColor=#4589ff;" vertex="1" parent="1">
+      <mxGeometry x="230" y="118" width="46" height="46" as="geometry"/>
+    </mxCell>
+    <!-- browser title -->
+    <mxCell id="6" value="Browser  —  ui/index.html" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontStyle=1;fontColor=#f4f4f4;align=left;" vertex="1" parent="1">
+      <mxGeometry x="292" y="108" width="280" height="22" as="geometry"/>
+    </mxCell>
+    <!-- browser fetch calls -->
+    <mxCell id="7" value="fetch() POST   /api/items        fetch() GET    /api/items        fetch() GET    /api/items/:id        fetch() PUT    /api/items/:id        fetch() DELETE /api/items/:id" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontColor=#c6c6c6;align=left;fontFamily=Courier New;" vertex="1" parent="1">
+      <mxGeometry x="292" y="132" width="780" height="64" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ZONE B: IBM CODE ENGINE                                       -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <mxCell id="8" value="IBM CODE ENGINE  —  event-notification-server  (us-south  ·  5b578840)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;fontColor=#ff832b;align=left;" vertex="1" parent="1">
+      <mxGeometry x="200" y="228" width="680" height="16" as="geometry"/>
+    </mxCell>
+    <!-- CE outer container -->
+    <mxCell id="9" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c1c1c;strokeColor=#ff832b;strokeWidth=2;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="200" y="248" width="900" height="700" as="geometry"/>
+    </mxCell>
+
+    <!-- ── LAYER 1: HTTP Ingress ── -->
+    <mxCell id="10" value="HTTP INGRESS" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=1;fontColor=#a8a8a8;align=left;" vertex="1" parent="1">
+      <mxGeometry x="226" y="262" width="120" height="14" as="geometry"/>
+    </mxCell>
+    <!-- Gin Router box -->
+    <mxCell id="11" value="Gin Router  (:8080)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#f4f4f4;align=left;" vertex="1" parent="1">
+      <mxGeometry x="226" y="282" width="180" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="12" value="POST   /api/items
+GET    /api/items
+GET    /api/items/:id
+PUT    /api/items/:id
+DELETE /api/items/:id
+GET    /   (ui/index.html)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#353535;strokeColor=#6f6f6f;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#f4f4f4;" vertex="1" parent="1">
+      <mxGeometry x="220" y="300" width="240" height="110" as="geometry"/>
+    </mxCell>
+    <!-- CORS Middleware box -->
+    <mxCell id="13" value="CORS Middleware" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#f4f4f4;align=left;" vertex="1" parent="1">
+      <mxGeometry x="510" y="282" width="160" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="14" value="Access-Control-Allow-Origin: *
+Methods: GET POST PUT DELETE OPTIONS
+Preflight OPTIONS  →  204 No Content" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#353535;strokeColor=#6f6f6f;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#f4f4f4;" vertex="1" parent="1">
+      <mxGeometry x="504" y="300" width="280" height="70" as="geometry"/>
+    </mxCell>
+    <!-- handler.go box -->
+    <mxCell id="15" value="handler.go" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#f4f4f4;align=left;" vertex="1" parent="1">
+      <mxGeometry x="834" y="282" width="100" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="16" value="Create()  → store.Create()
+List()    → store.List()
+Get()     → store.GetByID()
+Update()  → store.Update()
+Delete()  → store.Delete()
+ShouldBindJSON  /  c.JSON" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#353535;strokeColor=#6f6f6f;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#f4f4f4;" vertex="1" parent="1">
+      <mxGeometry x="828" y="300" width="240" height="110" as="geometry"/>
+    </mxCell>
+
+    <!-- ── SEPARATOR ── -->
+    <mxCell id="17" value="" style="line;strokeColor=#525252;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="220" y="432" width="858" height="10" as="geometry"/>
+    </mxCell>
+
+    <!-- ── LAYER 2: Startup / Config ── -->
+    <mxCell id="18" value="STARTUP  —  config + credentials" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=1;fontColor=#a8a8a8;align=left;" vertex="1" parent="1">
+      <mxGeometry x="226" y="448" width="260" height="14" as="geometry"/>
+    </mxCell>
+    <!-- main.go box -->
+    <mxCell id="19" value="main.go" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#42be65;align=left;" vertex="1" parent="1">
+      <mxGeometry x="226" y="468" width="80" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="20" value="loadCOSConfig()
+NewStore(cosCfg)
+NewHandler(store)
+gin.Default()
+r.Run(:8080)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#071908;strokeColor=#42be65;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#42be65;" vertex="1" parent="1">
+      <mxGeometry x="220" y="486" width="200" height="100" as="geometry"/>
+    </mxCell>
+    <!-- config.go box -->
+    <mxCell id="21" value="config.go" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#42be65;align=left;" vertex="1" parent="1">
+      <mxGeometry x="466" y="468" width="80" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="22" value="COSConfig struct
+SecretsManagerConfig struct
+COSConfigFromEnv()
+COSInfraConfigFromEnv()
+SecretsManagerConfigFromEnv()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#071908;strokeColor=#42be65;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#42be65;" vertex="1" parent="1">
+      <mxGeometry x="460" y="486" width="270" height="100" as="geometry"/>
+    </mxCell>
+    <!-- secrets.go box -->
+    <mxCell id="23" value="secrets.go" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#42be65;align=left;" vertex="1" parent="1">
+      <mxGeometry x="786" y="468" width="90" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="24" value="IAMAPIKeyFromSecretsManager()
+NewSecretsManagerV2 client
+GetSecret(secretID)
+cast → IAMCredentialsSecret
+return ApiKey string" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#071908;strokeColor=#42be65;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#42be65;" vertex="1" parent="1">
+      <mxGeometry x="780" y="486" width="288" height="100" as="geometry"/>
+    </mxCell>
+
+    <!-- ── SEPARATOR ── -->
+    <mxCell id="25" value="" style="line;strokeColor=#525252;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="220" y="604" width="858" height="10" as="geometry"/>
+    </mxCell>
+
+    <!-- ── LAYER 3: Data ── -->
+    <mxCell id="26" value="DATA LAYER" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=1;fontColor=#a8a8a8;align=left;" vertex="1" parent="1">
+      <mxGeometry x="226" y="622" width="100" height="14" as="geometry"/>
+    </mxCell>
+    <!-- model.go box -->
+    <mxCell id="27" value="model.go" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#be95ff;align=left;" vertex="1" parent="1">
+      <mxGeometry x="226" y="642" width="80" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="28" value="type Item struct
+  ID        string
+  Name      string
+  Value     string
+  CreatedAt time.Time
+  UpdatedAt time.Time" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c0f30;strokeColor=#be95ff;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#be95ff;" vertex="1" parent="1">
+      <mxGeometry x="220" y="660" width="210" height="110" as="geometry"/>
+    </mxCell>
+    <!-- store.go box -->
+    <mxCell id="29" value="store.go" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#be95ff;align=left;" vertex="1" parent="1">
+      <mxGeometry x="486" y="642" width="80" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="30" value="NewStore(cfg COSConfig)
+Create()  → PutObject
+GetByID() → GetObject
+List()    → ListObjectsV2
+Update()  → PutObject
+Delete()  → DeleteObject
+key: items/id.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c0f30;strokeColor=#be95ff;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#be95ff;" vertex="1" parent="1">
+      <mxGeometry x="480" y="660" width="250" height="120" as="geometry"/>
+    </mxCell>
+    <!-- ibm-cos-sdk-go box -->
+    <mxCell id="31" value="ibm-cos-sdk-go" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1;fontColor=#be95ff;align=left;" vertex="1" parent="1">
+      <mxGeometry x="796" y="642" width="130" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="32" value="aws.NewConfig()
+ibmiam.NewStaticCredentials()
+session.NewSession()
+s3.New(sess)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c0f30;strokeColor=#be95ff;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontFamily=Courier New;fontColor=#be95ff;" vertex="1" parent="1">
+      <mxGeometry x="790" y="660" width="278" height="90" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- ZONE C: IBM CLOUD SERVICES                                    -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <mxCell id="33" value="IBM CLOUD SERVICES" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;fontColor=#ff832b;align=left;" vertex="1" parent="1">
+      <mxGeometry x="200" y="978" width="200" height="16" as="geometry"/>
+    </mxCell>
+    <!-- IBM Cloud container -->
+    <mxCell id="34" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c1c1c;strokeColor=#ff832b;strokeWidth=2;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="200" y="998" width="900" height="260" as="geometry"/>
+    </mxCell>
+
+    <!-- Secrets Manager card -->
+    <mxCell id="35" value="" style="shape=mxgraph.ibm.base;ibmType=service;fillColor=#da1e28;strokeColor=#da1e28;" vertex="1" parent="1">
+      <mxGeometry x="250" y="1018" width="40" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="36" value="IBM Secrets Manager" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#f4f4f4;align=left;" vertex="1" parent="1">
+      <mxGeometry x="300" y="1018" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="37" value="Region: eu-gb
+Instance: d53e26db-b7c1-461d
+Secret type: iam_credentials
+Secret name: resilience-forge-iam-api-key
+Secret ID: 2c54b838-360b-fc07-cff9" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d0709;strokeColor=#da1e28;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontColor=#ffb3b8;" vertex="1" parent="1">
+      <mxGeometry x="226" y="1064" width="260" height="110" as="geometry"/>
+    </mxCell>
+
+    <!-- IAM Token Service card -->
+    <mxCell id="38" value="" style="shape=mxgraph.ibm.base;ibmType=service;fillColor=#6929c4;strokeColor=#6929c4;" vertex="1" parent="1">
+      <mxGeometry x="560" y="1018" width="40" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="39" value="IBM IAM Token Service" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#f4f4f4;align=left;" vertex="1" parent="1">
+      <mxGeometry x="610" y="1018" width="220" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="40" value="Host: iam.cloud.ibm.com
+Endpoint: /identity/token
+Validates IAM API key
+Issues Bearer access token
+Used by: secrets.go + ibm-cos-sdk-go" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c0638;strokeColor=#6929c4;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontColor=#d4bbff;" vertex="1" parent="1">
+      <mxGeometry x="516" y="1064" width="270" height="110" as="geometry"/>
+    </mxCell>
+
+    <!-- COS Bucket card -->
+    <mxCell id="41" value="" style="shape=mxgraph.ibm.base;ibmType=storage;fillColor=#0f62fe;strokeColor=#0f62fe;" vertex="1" parent="1">
+      <mxGeometry x="860" y="1018" width="40" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="42" value="IBM Cloud Object Storage" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#f4f4f4;align=left;" vertex="1" parent="1">
+      <mxGeometry x="910" y="1018" width="240" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="43" value="Instance: resilience-forge
+Bucket: resilience-app
+Region: us-south-smart
+Keys: items/id.json (JSON objects)
+Ops: PutObject / GetObject
+     ListObjectsV2 / DeleteObject" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#001141;strokeColor=#0f62fe;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontColor=#a6c8ff;" vertex="1" parent="1">
+      <mxGeometry x="800" y="1064" width="268" height="120" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- LEGEND                                                        -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <mxCell id="44" value="LEGEND" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=1;fontColor=#a8a8a8;align=left;" vertex="1" parent="1">
+      <mxGeometry x="20" y="98" width="80" height="14" as="geometry"/>
+    </mxCell>
+    <mxCell id="45" value="HTTP request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0a1f44;strokeColor=#4589ff;strokeWidth=2;fontSize=10;fontColor=#a6c8ff;" vertex="1" parent="1">
+      <mxGeometry x="20" y="120" width="150" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="46" value="Startup flow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#071908;strokeColor=#42be65;strokeWidth=2;fontSize=10;fontColor=#42be65;" vertex="1" parent="1">
+      <mxGeometry x="20" y="160" width="150" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="47" value="Request flow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2b2000;strokeColor=#f1c21b;strokeWidth=2;fontSize=10;fontColor=#f1c21b;" vertex="1" parent="1">
+      <mxGeometry x="20" y="200" width="150" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="48" value="Data layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c0f30;strokeColor=#be95ff;strokeWidth=2;fontSize=10;fontColor=#be95ff;" vertex="1" parent="1">
+      <mxGeometry x="20" y="240" width="150" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="49" value="IBM Cloud services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1c1c1c;strokeColor=#ff832b;strokeWidth=2;fontSize=10;fontColor=#ff832b;" vertex="1" parent="1">
+      <mxGeometry x="20" y="280" width="150" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="50" value="Dashed = return path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#262626;strokeColor=#6f6f6f;strokeWidth=1;dashed=1;fontSize=10;fontColor=#a8a8a8;" vertex="1" parent="1">
+      <mxGeometry x="20" y="320" width="150" height="28" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- EDGES — REQUEST FLOW (blue/yellow)                            -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+
+    <!-- Browser → Gin Router -->
+    <mxCell id="51" value="HTTP :8080" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#4589ff;strokeWidth=2;fontSize=10;fontColor=#a6c8ff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="4" target="12">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Gin Router → CORS -->
+    <mxCell id="52" value="all requests" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#f1c21b;strokeWidth=2;fontSize=10;fontColor=#f1c21b;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="12" target="14">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- CORS → handler -->
+    <mxCell id="53" value="c.Next()" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#f1c21b;strokeWidth=2;fontSize=10;fontColor=#f1c21b;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="14" target="16">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- handler → store -->
+    <mxCell id="54" value="store.CRUD()" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#be95ff;strokeWidth=2;fontSize=10;fontColor=#be95ff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="16" target="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- handler uses model (dashed) -->
+    <mxCell id="55" value="Item struct" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#be95ff;strokeWidth=1;dashed=1;fontSize=10;fontColor=#be95ff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="16" target="28">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="820" y="355"/>
+          <mxPoint x="820" y="715"/>
+          <mxPoint x="438" y="715"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- store uses model (dashed) -->
+    <mxCell id="56" value="marshal/unmarshal" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#be95ff;strokeWidth=1;dashed=1;fontSize=10;fontColor=#be95ff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="30" target="28">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- store → SDK -->
+    <mxCell id="57" value="S3 calls" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#be95ff;strokeWidth=2;fontSize=10;fontColor=#be95ff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="30" target="32">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- store → COS Bucket -->
+    <mxCell id="58" value="PutObject / GetObject
+ListObjectsV2 / DeleteObject" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0f62fe;strokeWidth=2;fontSize=10;fontColor=#a6c8ff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="30" target="43">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- EDGES — STARTUP FLOW (green)                                  -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+
+    <!-- 1. main → config -->
+    <mxCell id="59" value="1. read env vars" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#42be65;strokeWidth=2;fontSize=10;fontColor=#42be65;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="20" target="22">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 2. config → secrets -->
+    <mxCell id="60" value="2. SM vars present" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#42be65;strokeWidth=2;fontSize=10;fontColor=#42be65;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="22" target="24">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 3. secrets → Secrets Manager -->
+    <mxCell id="61" value="3. GetSecret(id)" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#da1e28;strokeWidth=2;fontSize=10;fontColor=#ffb3b8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="24" target="37">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 4. Secrets Manager → IAM (validate) -->
+    <mxCell id="62" value="4. validate IAM key" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6929c4;strokeWidth=2;fontSize=10;fontColor=#d4bbff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="37" target="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 5. return IAM API key to main (dashed) -->
+    <mxCell id="63" value="5. IAM API key returned" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#42be65;strokeWidth=2;dashed=1;fontSize=10;fontColor=#42be65;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="24" target="20">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="170" y="536"/>
+          <mxPoint x="170" y="586"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- 6. main → store (NewStore) -->
+    <mxCell id="64" value="6. NewStore(cosCfg)" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#42be65;strokeWidth=2;fontSize=10;fontColor=#42be65;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="20" target="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- 7. SDK → IAM (token refresh, dashed) -->
+    <mxCell id="65" value="7. token refresh" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6929c4;strokeWidth=1;dashed=1;fontSize=10;fontColor=#d4bbff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="32" target="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

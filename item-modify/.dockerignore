@@ -1,0 +1,18 @@
+# Build artifacts
+api/api
+api/*.test
+
+# Go cache
+api/vendor/
+
+# OS junk
+.DS_Store
+**/.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Diagram / docs (not needed in image)
+arch/
+*.md

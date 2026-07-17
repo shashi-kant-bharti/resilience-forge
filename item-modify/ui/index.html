@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resilience Forge — Items</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #1f2328;
+      background: #f7f8fa;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 24px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header h1 { font-size: 16px; font-weight: 600; }
+    header span { color: #57606a; font-size: 13px; }
+
+    main {
+      max-width: 860px;
+      margin: 32px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ---- card ---- */
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 20px 24px;
+    }
+    .card h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+
+    /* ---- form ---- */
+    .form-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
+    .field label { font-size: 12px; color: #57606a; font-weight: 500; }
+    .field input {
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+    }
+    .field input:focus { border-color: #3b82d4; }
+
+    /* ---- buttons ---- */
+    button {
+      border: none;
+      border-radius: 4px;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .btn-primary { background: #3b82d4; color: #fff; }
+    .btn-primary:hover { background: #2d6db8; }
+    .btn-secondary { background: #f7f8fa; color: #1f2328; border: 1px solid #e5e7eb; }
+    .btn-secondary:hover { background: #eef0f3; }
+    .btn-danger { background: #fff; color: #cf222e; border: 1px solid #e5e7eb; }
+    .btn-danger:hover { background: #fff1f0; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+    /* ---- table ---- */
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 13px;
+    }
+    th { color: #57606a; font-weight: 600; font-size: 12px; background: #f7f8fa; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7f8fa; }
+
+    .actions { display: flex; gap: 6px; }
+
+    /* ---- toast ---- */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1f2328;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; }
+    #toast.error { background: #cf222e; }
+
+    /* ---- modal ---- */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .modal h2 { font-size: 14px; font-weight: 600; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+    .empty { color: #57606a; text-align: center; padding: 24px 0; font-size: 13px; }
+    .id-cell { font-family: monospace; font-size: 11px; color: #57606a; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Resilience Forge</h1>
+  <span>/ Items</span>
+</header>
+
+<main>
+  <!-- Create -->
+  <div class="card">
+    <h2>Create Item</h2>
+    <div class="form-row">
+      <div class="field">
+        <label for="inp-name">Name <span style="color:#cf222e">*</span></label>
+        <input id="inp-name" placeholder="e.g. widget" />
+      </div>
+      <div class="field">
+        <label for="inp-value">Value</label>
+        <input id="inp-value" placeholder="e.g. blue" />
+      </div>
+      <button class="btn-primary" onclick="createItem()">Add Item</button>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <h2 style="margin:0">Items</h2>
+      <button class="btn-secondary btn-sm" onclick="loadItems()">Refresh</button>
+    </div>
+    <div id="table-wrap">
+      <p class="empty">Loading…</p>
+    </div>
+  </div>
+</main>
+
+<!-- Edit modal -->
+<div class="overlay" id="edit-overlay">
+  <div class="modal">
+    <h2>Edit Item</h2>
+    <input type="hidden" id="edit-id" />
+    <div class="field">
+      <label for="edit-name">Name <span style="color:#cf222e">*</span></label>
+      <input id="edit-name" />
+    </div>
+    <div class="field">
+      <label for="edit-value">Value</label>
+      <input id="edit-value" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeEdit()">Cancel</button>
+      <button class="btn-primary" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const API = '/api/items';
+
+  // ---- toast ---------------------------------------------------------------
+  let toastTimer;
+  function toast(msg, isError) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'show' + (isError ? ' error' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.className = '', 2800);
+  }
+
+  // ---- API helpers ---------------------------------------------------------
+  async function apiFetch(path, opts) {
+    const res = await fetch(API + path, opts);
+    const text = await res.text();
+    const json = text ? JSON.parse(text) : null;
+    if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+    return json;
+  }
+
+  // ---- render table --------------------------------------------------------
+  function renderTable(items) {
+    const wrap = document.getElementById('table-wrap');
+    if (!items || items.length === 0) {
+      wrap.innerHTML = '<p class="empty">No items yet. Create one above.</p>';
+      return;
+    }
+    const rows = items.map(item => `
+      <tr>
+        <td class="id-cell" title="${item.id}">${item.id}</td>
+        <td>${esc(item.name)}</td>
+        <td>${esc(item.value)}</td>
+        <td>${fmtDate(item.updated_at)}</td>
+        <td>
+          <div class="actions">
+            <button class="btn-secondary btn-sm" onclick="openEdit('${item.id}','${esc(item.name)}','${esc(item.value)}')">Edit</button>
+            <button class="btn-danger btn-sm" onclick="deleteItem('${item.id}')">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Value</th><th>Updated</th><th></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  // ---- CRUD ----------------------------------------------------------------
+  async function loadItems() {
+    try {
+      const items = await apiFetch('');
+      renderTable(items);
+    } catch (e) {
+      toast(e.message, true);
+    }
+  }
+
+  async function createItem() {
+    const name  = document.getElementById('inp-name').value.trim();
+    const value = document.getElementById('inp-value').value.trim();
+    if (!name) { toast('Name is required', true); return; }
+    try {
+      await apiFetch('', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, value }),
+      });
+      document.getElementById('inp-name').value  = '';
+      document.getElementById('inp-value').value = '';
+      toast('Item created');
+      loadItems();
+    } catch (e) { toast(e.message, true); }
+  }
+
+  async function deleteItem(id) {
+    if (!confirm('Delete this item?')) return;
+    try {
+      await apiFetch('/' + id, { method: 'DELETE' });
+      toast('Item deleted');
+      loadItems();
+    } catch (e) { toast(e.message, true); }
+  }
+
+  // ---- Edit modal ----------------------------------------------------------
+  function openEdit(id, name, value) {
+    document.getElementById('edit-id').value    = id;
+    document.getElementById('edit-name').value  = name;
+    document.getElementById('edit-value').value = value;
+    document.getElementById('edit-overlay').classList.add('open');
+  }
+
+  function closeEdit() {
+    document.getElementById('edit-overlay').classList.remove('open');
+  }
+
+  async function saveEdit() {
+    const id    = document.getElementById('edit-id').value;
+    const name  = document.getElementById('edit-name').value.trim();
+    const value = document.getElementById('edit-value').value.trim();
+    if (!name) { toast('Name is required', true); return; }
+    try {
+      await apiFetch('/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, value }),
+      });
+      closeEdit();
+      toast('Item updated');
+      loadItems();
+    } catch (e) { toast(e.message, true); }
+  }
+
+  // ---- utils ---------------------------------------------------------------
+  function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function fmtDate(s) { return s ? new Date(s).toLocaleString() : '—'; }
+
+  // ---- init ----------------------------------------------------------------
+  loadItems();
+</script>
+</body>
+</html>
